@@ -128,10 +128,10 @@ class CategoryController extends Controller
 
 [ico-version]: https://img.shields.io/packagist/v/nosennij/laravelcategory.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/nosennij/laravelcategory.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/nosennij/laravelcategory/master.svg?style=flat-square
+[ico-travis]: https://travis-ci.org/n-osennij/laravel-category.svg?branch=master
 [ico-styleci]: https://styleci.io/repos/145241800/shield
 
 [link-packagist]: https://packagist.org/packages/n.osennij/laravel-category
 [link-downloads]: https://packagist.org/packages/n.osennij/laravel-category
-[link-travis]: https://travis-ci.org/n.osennij/laravel-category
+[link-travis]: https://travis-ci.org/n-osennij/laravel-category
 [link-styleci]: https://styleci.io/repos/145241800
