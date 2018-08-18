@@ -4,7 +4,6 @@ use Faker\Generator as Faker;
 use nosennij\LaravelCategory\models\MyPackageCategory as Category;
 
 $factory->define(Category::class, function (Faker $faker) {
-
     $slug = $faker->unique()->slug;
     $name = implode(' ', explode('-', $slug));
 

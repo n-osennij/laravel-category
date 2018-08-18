@@ -42,15 +42,15 @@ class LaravelCategory
      * Возвращает готовые bootstrap 4.1 хлебные крошки.
      * Ищет текущую категорию по $slug, а затем все котеории выше.
      * Для удобного вывода сортирует полученный массив категория в обратном порядке по ключу.
-     * Если $slug пуст (когда находится на самом верху - на главной), вернёт пустой вид
+     * Если $slug пуст (когда находится на самом верху - на главной), вернёт пустой вид.
      *
      * @return View
      */
     public static function createCategoryBreadcrumbs(): View
     {
-        if (!empty(static::$slug)) {
+        if (! empty(static::$slug)) {
             $category = static::$category;
-            $breadcrumbs = array($category->toArray());
+            $breadcrumbs = [$category->toArray()];
             while ($parent = $category->parent) {
                 array_push($breadcrumbs, $parent->toArray());
                 $category = $parent;
@@ -76,7 +76,7 @@ class LaravelCategory
 
     /**
      * Ищет в БД по $slug категорию.
-     * Если категории нет, вернёт 404
+     * Если категории нет, вернёт 404.
      *
      * @param string $slug
      * @return Category

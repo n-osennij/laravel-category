@@ -13,26 +13,25 @@ class LaravelCategoryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'nosennij');
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'nosennij');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         if ($this->app->runningInConsole()) {
 
             // Publishing database folder.
             $this->publishes([
-                __DIR__ . '/../database' => database_path(),
+                __DIR__.'/../database' => database_path(),
             ], 'laravelcategory.db');
 
             // Publishing the configuration file.
             $this->publishes([
-                __DIR__ . '/../config/laravelcategory.php' => config_path('laravelcategory.php'),
+                __DIR__.'/../config/laravelcategory.php' => config_path('laravelcategory.php'),
             ], 'laravelcategory.config');
 
             // Publishing the views.
             $this->publishes([
-                __DIR__ . '/../resources/views' => base_path('resources/views/vendor/nosennij'),
+                __DIR__.'/../resources/views' => base_path('resources/views/vendor/nosennij'),
             ], 'laravelcategory.views');
-
         }
     }
 
@@ -43,7 +42,7 @@ class LaravelCategoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/laravelcategory.php', 'laravelcategory');
+        $this->mergeConfigFrom(__DIR__.'/../config/laravelcategory.php', 'laravelcategory');
 
         // Register the service the package provides.
         $this->app->singleton('laravelcategory', function ($app) {
