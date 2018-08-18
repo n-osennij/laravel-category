@@ -78,7 +78,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 ```
 
-Заполнить таблицу тестовыми данными можно следующей командой (если импортировали сида и фабрику), предварительно зарегестрировав сид в файле `database/seeds/CategoriesTableSeeder.php` - `$this->call(CategoriesTableSeeder::class);`
+Заполнить таблицу тестовыми данными можно следующей командой (если импортировали сида и фабрику), предварительно зарегестрировав сид в файле `database/seeds/CategoriesTableSeeder.php` - `$this->call(CategoriesTableSeeder::class);` и выполнив `composer dumpautoload`
 
 ```
 php artisan db:seed
