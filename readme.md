@@ -131,7 +131,7 @@ class CategoryController extends Controller
 [ico-travis]: https://img.shields.io/travis/nosennij/laravelcategory/master.svg?style=flat-square
 [ico-styleci]: https://styleci.io/repos/145241800/shield
 
-[link-packagist]: https://packagist.org/packages/nosennij/laravelcategory
-[link-downloads]: https://packagist.org/packages/nosennij/laravelcategory
-[link-travis]: https://travis-ci.org/nosennij/laravelcategory
+[link-packagist]: https://packagist.org/packages/nosennij/laravel-category
+[link-downloads]: https://packagist.org/packages/nosennij/laravel-category
+[link-travis]: https://travis-ci.org/nosennij/laravel-category
 [link-styleci]: https://styleci.io/repos/145241800
