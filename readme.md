@@ -83,6 +83,11 @@ CREATE TABLE `categories` (
 ```
 php artisan db:seed
 ```
+Для работы с изображениями следует создать симольную ссылку на хранилище
+
+```
+php artisan storage:link
+```
 
 ##Использование
 
