@@ -22,7 +22,7 @@
    1. Установите laravel и настройте подключение к БД в файле `.env`
    1. Установите пакет через Composer
        ``` bash
-       $ composer require nosennij/laravel-category
+       $ composer require n.osennij/laravel-category
        ```
    1. Выполните миграцию базы данных командой
        ```
