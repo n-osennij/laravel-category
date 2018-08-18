@@ -5,10 +5,10 @@
    [![Build Status][ico-travis]][link-travis]
    [![StyleCI][ico-styleci]][link-styleci]
    
-   Пакет добавлет возможность быстро и удобно создавать:
+   Пакет добавляет возможность быстро и удобно создавать:
    - ступенчатое меню категорий
    - "хлебные крошки"
-   - карточки категорй с изображениями 
+   - карточки категорий с изображениями 
    
    ![](https://media.giphy.com/media/1zJnGQZKXnC2XIK6oc/giphy.gif)
    
@@ -129,9 +129,9 @@ class CategoryController extends Controller
 [ico-version]: https://img.shields.io/packagist/v/nosennij/laravelcategory.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/nosennij/laravelcategory.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/nosennij/laravelcategory/master.svg?style=flat-square
-[ico-styleci]: https://styleci.io/repos/12345678/shield
+[ico-styleci]: https://styleci.io/repos/145241800/shield
 
 [link-packagist]: https://packagist.org/packages/nosennij/laravelcategory
 [link-downloads]: https://packagist.org/packages/nosennij/laravelcategory
 [link-travis]: https://travis-ci.org/nosennij/laravelcategory
-[link-styleci]: https://styleci.io/repos/12345678
+[link-styleci]: https://styleci.io/repos/145241800
