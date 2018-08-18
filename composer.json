@@ -1,0 +1,40 @@
+{
+  "name": "n.osennij/laravel-category",
+  "description": "Пакет добавлет возможность быстро и удобно создавать ступенчатое меню категорий, хлебные крошки и карточки категорй с изображениями",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "n.osennij",
+      "email": "n.osennij@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "illuminate/support": "~5"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~6.0",
+    "orchestra/testbench": "~3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "nosennij\\LaravelCategory\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "nosennij\\LaravelCategory\\Tests\\": "tests"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "nosennij\\LaravelCategory\\LaravelCategoryServiceProvider"
+      ],
+      "aliases": {
+        "LaravelCategory": "nosennij\\LaravelCategory\\Facades\\LaravelCategory"
+      }
+    }
+  }
+}
