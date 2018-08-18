@@ -4,19 +4,19 @@ namespace Nosennij\LaravelCategory\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MyPackageCategory extends Model
 {
     /**
-     * Название таблицы в базе данных для работы модели
+     * Название таблицы в базе данных для работы модели.
      */
     protected $table = 'categories';
 
     /**
      * Возвращает условия для Eloquent построителя запросов
-     * Условие - коревой уровень категорий
+     * Условие - коревой уровень категорий.
      *
      * @param $query
      * @return mixed
@@ -27,22 +27,22 @@ class MyPackageCategory extends Model
     }
 
     /**
-     * Возвращает детей запрошенной категории
+     * Возвращает детей запрошенной категории.
      *
      * @return HasMany
      */
     public function subcategories(): HasMany
     {
-        return $this->hasMany(MyPackageCategory::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     /**
-     * Возвращает родителя запрошенной категории
+     * Возвращает родителя запрошенной категории.
      *
      * @return BelongsTo
      */
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(MyPackageCategory::class, 'parent_id');
+        return $this->belongsTo(self::class, 'parent_id');
     }
 }
