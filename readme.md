@@ -78,10 +78,10 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 ```
 
-Заполнить таблицу тестовыми данными можно следующей командой (если импортировали сида и фабрику)
+Заполнить таблицу тестовыми данными можно следующей командой (если импортировали сида и фабрику), предварительно зарегестрировав сид в файле `database/seeds/CategoriesTableSeeder.php` - `$this->call(CategoriesTableSeeder::class);`
 
 ```
-`php artisan db:seed`
+php artisan db:seed
 ```
 
 ##Использование
@@ -107,13 +107,16 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    $lc = new LaravelCategory($request->slug); //Созадём экземляр класса
-    
-    return view('catalog', [
-        'categories_numu' => $lc::createCategoryMenu(),
-        'breadcrumb' => $lc::createCategoryBreadcrumbs(),
-        'categories_сards' => $lc::createCategoryCards(),
-    ]);
+   public function index(Request $request)
+   {
+       $lc = new LaravelCategory($request->slug); //Созадём экземляр класса
+
+       return view('catalog', [
+           'categories_numu' => $lc::createCategoryMenu(),
+           'breadcrumb' => $lc::createCategoryBreadcrumbs(),
+           'categories_сards' => $lc::createCategoryCards(),
+       ]);
+    }
 }
 ```
 
