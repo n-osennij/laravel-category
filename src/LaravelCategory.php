@@ -82,6 +82,16 @@ class LaravelCategory
     }
 
     /**
+     * Возвращает дерево всех категорий в виде массива.
+     *
+     * @return array
+     */
+    public static function getCategoryTree(): array
+    {
+        return static::buildTree(Category::all()->toArray());
+    }
+
+    /**
      * Ищет в БД по $slug категорию.
      * Если категории нет, вернёт 404.
      *
@@ -91,5 +101,27 @@ class LaravelCategory
     private static function slugCategory(string $slug): Category
     {
         return Category::where('slug', $slug)->firstOrFail();
+    }
+
+    /**
+     * На основе всех категорий строит многомерный дерево-массив категорий.
+     *
+     * @param array $items
+     * @return array
+     */
+    private static function buildTree(array $items): array
+    {
+        $childs = array();
+        foreach ($items as &$item) {
+            $childs[$item['parent_id']][] = &$item;
+        }
+        unset($item);
+        foreach ($items as &$item) {
+            if (isset($childs[$item['id']])) {
+                $item['childs'] = $childs[$item['id']];
+            }
+        }
+
+        return $childs[0];
     }
 }
