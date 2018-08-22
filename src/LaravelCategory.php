@@ -48,12 +48,14 @@ class LaravelCategory
      */
     public static function createCategoryBreadcrumbs(): View
     {
-        if (! empty(static::$slug)) {
+        if (!empty(static::$slug)) {
             $category = static::$category;
-            $breadcrumbs = [$category->toArray()];
-            while ($parent = $category->parent) {
+            $breadcrumbs = array($category->toArray());
+            $i = 20; //ограничитель глубины циклов. На случай ошибки в цепочке категорий
+            while ($parent = $category->parent || $i > 0) {
                 array_push($breadcrumbs, $parent->toArray());
                 $category = $parent;
+                $i--;
             }
             krsort($breadcrumbs);
         }
