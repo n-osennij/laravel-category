@@ -44,15 +44,20 @@ class LaravelCategory
      * Для удобного вывода сортирует полученный массив категория в обратном порядке по ключу.
      * Если $slug пуст (когда находится на самом верху - на главной), вернёт пустой вид.
      *
+     * @param string|null $append - Для добавления последней хлебной крошки, которая не связана с категориями.
+     * Например, для отображения хлебных крошек на старнице товара удобно вывести все ссылки активыными,
+     * а последнюю (имя товара) - нет. Т.к. класс работает только с категориями, то передать имя товара -
+     * последней хлебной крошки нужно отдельно.
      * @return View
      */
-    public static function createCategoryBreadcrumbs(): View
+    public static function createCategoryBreadcrumbs(string $append = null): View
     {
         if (!empty(static::$slug)) {
             $category = static::$category;
             $breadcrumbs = array($category->toArray());
-            $i = 20; //ограничитель глубины циклов. На случай ошибки в цепочке категорий
-            while ($parent = $category->parent || $i > 0) {
+            $i = 15; //ограничитель глубины циклов. На случай ошибки в цепочке категорий.
+            while ($parent = $category->parent) {
+                if ($i <= 0) break;
                 array_push($breadcrumbs, $parent->toArray());
                 $category = $parent;
                 $i--;
@@ -60,7 +65,7 @@ class LaravelCategory
             krsort($breadcrumbs);
         }
 
-        return view('nosennij::category_breadcrumbs', compact('breadcrumbs'));
+        return view('nosennij::category_breadcrumbs', compact('breadcrumbs', 'append'));
     }
 
     /**
