@@ -3,7 +3,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a href="{{route('category')}}">
+            <a href="{{route($config['route']['name'])}}">
                 {{$config['main_level']}}
             </a>
         </li>
