@@ -2,15 +2,46 @@
 
 namespace nosennij\LaravelCategory;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use nosennij\LaravelCategory\models\MyPackageCategory as Category;
 
 class LaravelCategory
 {
+    /**
+     * Slug категории, с которой будем работать
+     *
+     * @var string
+     */
     private static $slug;
+
+    /**
+     * Данные категории из БД
+     *
+     * @var Category
+     */
     private static $category;
+
+    /**
+     * Коллекция категорий из БД
+     *
+     * @var Collection
+     */
     private static $categories;
 
+    /**
+     * Время хренения кеша в минутах, если этот кеш создаётся
+     *
+     * @var int
+     */
+    private static $cache_time = 5;
+
+    /**
+     * LaravelCategory constructor.
+     *
+     * @param string|null $slug
+     */
     public function __construct(string $slug = null)
     {
         static::$slug = $slug;
@@ -48,24 +79,37 @@ class LaravelCategory
      * Например, для отображения хлебных крошек на старнице товара удобно вывести все ссылки активыными,
      * а последнюю (имя товара) - нет. Т.к. класс работает только с категориями, то передать имя товара -
      * последней хлебной крошки нужно отдельно.
-     * @return View
+     *
+     * @return string
      */
-    public static function createCategoryBreadcrumbs(string $append = null): View
+    public static function createCategoryBreadcrumbs(string $append = null): string
     {
-        if (!empty(static::$slug)) {
-            $category = static::$category;
-            $breadcrumbs = array($category->toArray());
-            $i = 15; //ограничитель глубины циклов. На случай ошибки в цепочке категорий.
-            while ($parent = $category->parent) {
-                if ($i <= 0) break;
-                array_push($breadcrumbs, $parent->toArray());
-                $category = $parent;
-                $i--;
-            }
-            krsort($breadcrumbs);
-        }
 
-        return view('nosennij::category_breadcrumbs', compact('breadcrumbs', 'append'));
+        $name = 'breadcrumbs_' . self::$slug . '_' . $append;
+
+        $value = Cache::remember($name, self::$cache_time, function () {
+
+            if (!empty(static::$slug)) {
+                $category = static::$category;
+                $breadcrumbs = array($category->toArray());
+                $i = 15; //ограничитель глубины циклов. На случай ошибки в цепочке категорий.
+                while ($parent = $category->parent) {
+                    if ($i <= 0) break;
+                    array_push($breadcrumbs, $parent->toArray());
+                    $category = $parent;
+                    $i--;
+                }
+                krsort($breadcrumbs);
+            }
+
+            $view = view('nosennij::category_breadcrumbs', compact('breadcrumbs', 'append'));
+
+            return $view->render();
+
+        });
+
+        return $value;
+
     }
 
     /**
@@ -88,7 +132,9 @@ class LaravelCategory
      */
     public static function getCategoryTree(): array
     {
-        return static::buildTree(Category::all()->toArray());
+        return Cache::remember('category_tree', self::$cache_time, function () {
+            return static::buildTree(Category::all()->toArray());
+        });
     }
 
     /**
