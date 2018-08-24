@@ -85,9 +85,7 @@ class LaravelCategory
      */
     public static function createCategoryBreadcrumbs(string $append = null): string
     {
-        $append = implode('-', explode(' ', $append));
-        
-        $name = 'breadcrumbs_' . self::$slug . '_' . $append;
+        $name = 'breadcrumbs_' . self::$slug . '_' . implode('-', explode(' ', $append));
 
         $value = Cache::remember($name, self::$cache_time, function () {
 
