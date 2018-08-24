@@ -35,16 +35,17 @@ class LaravelCategory
      *
      * @var int
      */
-    private static $cache_time = 5;
+    private static $cache_time;
 
     /**
      * LaravelCategory constructor.
      *
      * @param string|null $slug
      */
-    public function __construct(string $slug = null)
+    public function __construct(string $slug = null, int $cache_time = 5)
     {
         static::$slug = $slug;
+        static::$cache_time = $cache_time;
 
         if (empty(static::$slug)) {
             static::$categories = Category::main()->get();
