@@ -85,9 +85,9 @@ class LaravelCategory
      */
     public static function createCategoryBreadcrumbs(string $append = null): string
     {
-        $name = 'breadcrumbs_' . self::$slug . '_' . implode('-', explode(' ', $append));
+        $name = 'breadcrumbs_' . static::$slug . '_' . implode('-', explode(' ', $append));
 
-        $value = Cache::remember($name, self::$cache_time, function () {
+        $value = Cache::remember($name, static::$cache_time, function () use ($append) {
 
             if (!empty(static::$slug)) {
                 $category = static::$category;
@@ -100,6 +100,14 @@ class LaravelCategory
                     $i--;
                 }
                 krsort($breadcrumbs);
+
+                //добавляем поселюднюю хлебную крошку
+                if(!empty($append)) {
+                    $breadcrumbs[] = [
+                        'name' => $append,
+                        'slug' => '',
+                    ];
+                }
             }
 
             $view = view('nosennij::category_breadcrumbs', compact('breadcrumbs', 'append'));
@@ -109,7 +117,6 @@ class LaravelCategory
         });
 
         return $value;
-
     }
 
     /**
