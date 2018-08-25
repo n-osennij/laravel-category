@@ -164,17 +164,17 @@ class LaravelCategory
      */
     private static function buildTree(array $items): array
     {
-        $childs = array();
+        $children = array();
         foreach ($items as &$item) {
-            $childs[$item['parent_id']][] = &$item;
+            $children[$item['parent_id']][] = &$item;
         }
         unset($item);
         foreach ($items as &$item) {
-            if (isset($childs[$item['id']])) {
-                $item['childs'] = $childs[$item['id']];
+            if (isset($children[$item['id']])) {
+                $item['children'] = $children[$item['id']];
             }
         }
 
-        return $childs[0];
+        return $children[0];
     }
 }
