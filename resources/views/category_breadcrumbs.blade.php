@@ -1,14 +1,4 @@
-<?php
-    $config = config('laravelcategory');
-
-    if(!empty($append)) {
-        $breadcrumbs[] = [
-            'name' => $append,
-            'slug' => '',
-        ];
-    }
-
-?>
+@php($config = config('laravelcategory'))
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
