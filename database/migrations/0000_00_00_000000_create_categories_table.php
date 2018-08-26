@@ -18,7 +18,7 @@ class CreateCategoriesTable extends Migration
             $table->unsignedInteger('parent_id')->default(0)->index();
             $table->string('name', 100)->unique();
             $table->string('slug', 115)->unique()->index();
-            $table->string('img', 200);
+            $table->string('img', 100)->nullable()->defaule(null);
             $table->timestamps();
 
             $table->index(['id', 'parent_id']);

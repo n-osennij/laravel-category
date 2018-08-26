@@ -5,53 +5,76 @@ namespace nosennij\LaravelCategory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
-use nosennij\LaravelCategory\models\MyPackageCategory as Category;
+use nosennij\LaravelCategory\models\Category;
 
 class LaravelCategory
 {
-    /**
-     * Slug категории, с которой будем работать
-     *
-     * @var string
-     */
-    private static $slug;
-
     /**
      * Данные категории из БД
      *
      * @var Category
      */
-    private static $category;
+    private $category;
 
     /**
-     * Коллекция категорий из БД
+     * Коллекция категорий из БД. Или текущего уровня(если нет slug). Или уровня ниже
      *
      * @var Collection
      */
-    private static $categories;
+    private $categories;
 
     /**
      * Время хренения кеша в минутах, если этот кеш создаётся
+     * Свойство сделано public, чтобы можно было легко его изменить
      *
      * @var int
      */
-    private static $cache_time;
+    public $cache_time = 5;
 
     /**
-     * LaravelCategory constructor.
+     * Готовит стартовую информацию для работы класса, используя $slug
+     *
+     * @param string|null $slug
+     * @return LaravelCategory
+     */
+    public function initWithSlug(string $slug = null): LaravelCategory
+    {
+        if (!empty($slug)) {
+            $this->category = self::slugCategory($slug);
+        }
+        $this->init($slug);
+
+        return $this;
+    }
+
+    /**
+     * Заполняет категорию класса переданным значением и готовит остальные данные.
+     *
+     * @param $category
+     * @return LaravelCategory
+     */
+    public function initWithCategory($category): LaravelCategory
+    {
+        $slug = $category->slug ?? null;
+        if (!empty($slug)) {
+            $this->category = $category;
+        }
+        $this->init($slug);
+
+        return $this;
+    }
+
+    /**
+     * На основе $slug устанавливает категории главного уровня или уровнем ниже
      *
      * @param string|null $slug
      */
-    public function __construct(string $slug = null, int $cache_time = 5)
+    private function init(string $slug = null)
     {
-        static::$slug = $slug;
-        static::$cache_time = $cache_time;
-
-        if (empty(static::$slug)) {
-            static::$categories = Category::main()->get();
+        if (!empty($slug)) {
+            $this->categories = $this->category->subcategories;
         } else {
-            static::$category = self::slugCategory(static::$slug);
-            static::$categories = static::$category->subcategories;
+            $this->categories = Category::main()->get();
         }
     }
 
@@ -62,11 +85,11 @@ class LaravelCategory
      *
      * @return View
      */
-    public static function createCategoryMenu(): View
+    public function createCategoryMenu(): View
     {
         return view('nosennij::category_menu', [
-            'category' => static::$category,
-            'categories' => static::$categories,
+            'category' => $this->category,
+            'categories' => $this->categories,
         ]);
     }
 
@@ -83,33 +106,14 @@ class LaravelCategory
      *
      * @return string
      */
-    public static function createCategoryBreadcrumbs(string $append = null): string
+    public function createCategoryBreadcrumbs(string $append = null): string
     {
-        $name = 'breadcrumbs_' . static::$slug . '_' . implode('-', explode(' ', $append));
+        $slug = $this->category->slug ?? null;
+        $name = 'breadcrumbs_' . $slug . '_' . implode('-', explode(' ', $append));
 
-        $value = Cache::remember($name, static::$cache_time, function () use ($append) {
+        $value = Cache::remember($name, $this->cache_time, function () use ($slug, $append) {
 
-            if (!empty(static::$slug)) {
-                $category = static::$category;
-                $breadcrumbs = array($category->toArray());
-                $i = 15; //ограничитель глубины циклов. На случай ошибки в цепочке категорий.
-                while ($parent = $category->parent) {
-                    if ($i <= 0) break;
-                    array_push($breadcrumbs, $parent->toArray());
-                    $category = $parent;
-                    $i--;
-                }
-                krsort($breadcrumbs);
-
-                //добавляем поселюднюю хлебную крошку
-                if(!empty($append)) {
-                    $breadcrumbs[] = [
-                        'name' => $append,
-                        'slug' => '',
-                    ];
-                }
-            }
-
+            if (!empty($slug)) $breadcrumbs = $this->buildBreadcrumbs($slug, $append);
             $view = view('nosennij::category_breadcrumbs', compact('breadcrumbs', 'append'));
 
             return $view->render();
@@ -120,15 +124,46 @@ class LaravelCategory
     }
 
     /**
+     * Готовит массив хлебных крошек
+     *
+     * @param string $slug
+     * @param string|null $append
+     * @return array
+     */
+    private function buildBreadcrumbs(string $slug, string $append = null)
+    {
+        $category = $this->category;
+        $breadcrumbs = array($category->toArray());
+        $i = 15; //ограничитель глубины циклов. На случай ошибки в цепочке категорий.
+        while ($parent = $category->parent) {
+            if ($i <= 0) break;
+            array_push($breadcrumbs, $parent->toArray());
+            $category = $parent;
+            $i--;
+        }
+        krsort($breadcrumbs);
+
+        //добавляем поселюднюю хлебную крошку
+        if (!empty($append)) {
+            $breadcrumbs[] = [
+                'name' => $append,
+                'slug' => '',
+            ];
+        }
+
+        return $breadcrumbs;
+    }
+
+    /**
      * Возвращает готовые bootstrap 4.1 карточки (card) категорий с названием категории по центру.
      * Работает по аналогии с createCategoryMenu(), только тут выводятся карточки.
      *
      * @return View
      */
-    public static function createCategoryCards(): View
+    public function createCategoryCards(): View
     {
         return view('nosennij::category_card', [
-            'categories' => static::$categories,
+            'categories' => $this->categories,
         ]);
     }
 
@@ -137,10 +172,10 @@ class LaravelCategory
      *
      * @return array
      */
-    public static function getCategoryTree(): array
+    public function getCategoryTree(): array
     {
-        return Cache::remember('category_tree', self::$cache_time, function () {
-            return static::buildTree(Category::all()->toArray());
+        return Cache::remember('category_tree', $this->cache_time, function () {
+            return $this->buildTree(Category::all()->toArray());
         });
     }
 
@@ -151,7 +186,7 @@ class LaravelCategory
      * @param string $slug
      * @return Category
      */
-    private static function slugCategory(string $slug): Category
+    private function slugCategory(string $slug): Category
     {
         return Category::where('slug', $slug)->firstOrFail();
     }
@@ -162,7 +197,7 @@ class LaravelCategory
      * @param array $items
      * @return array
      */
-    private static function buildTree(array $items): array
+    private function buildTree(array $items): array
     {
         $children = array();
         foreach ($items as &$item) {

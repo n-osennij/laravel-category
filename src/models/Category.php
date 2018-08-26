@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MyPackageCategory extends Model
+class Category extends Model
 {
     /**
      * Название таблицы в базе данных для работы модели.

@@ -43,18 +43,21 @@
    1. Добавте css стили (необходимы для корректного вывода карточек категорий)
         ```
         .laravelcategorycard .text {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          padding: 10px;
-          opacity: 1;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            opacity: 1;
         }
         .laravelcategorycard a > .card-img {
-          opacity: 0.2;
+            opacity: 0.2;
+            transition: all 0.25s ease-in;
         }
         .laravelcategorycard a:hover > .card-img {
-          opacity: 0.5;
+            opacity: 0.5;
+            -webkit-box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.075) !important;
+            box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.075) !important;
         }
         ```        
         
@@ -64,9 +67,10 @@
 ```
 CREATE TABLE `categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` int(11) NOT NULL DEFAULT 0,
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `slug` varchar(115) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `img` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -75,19 +79,22 @@ CREATE TABLE `categories` (
   KEY `categories_id_parent_id_index` (`id`,`parent_id`),
   KEY `categories_parent_id_id_index` (`parent_id`,`id`),
   KEY `categories_parent_id_index` (`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 ```
 
-Заполнить таблицу тестовыми данными можно следующей командой (если импортировали сида и фабрику), предварительно зарегестрировав сид в файле `database/seeds/CategoriesTableSeeder.php` - `$this->call(CategoriesTableSeeder::class);` и выполнив `composer dumpautoload`
-
-```
-php artisan db:seed
-```
 Для работы с изображениями следует создать симольную ссылку на хранилище
 
 ```
 php artisan storage:link
 ```
+
+Заполнить таблицу тестовыми данными можно следующей командой (если импортировали сида и фабрику), предварительно зарегестрировав сид в файле `database/seeds/CategoriesTableSeeder.php` - `$this->call(CategoriesTableSeeder::class);` и выполнив `composer dumpautoload`
+
+```
+composer dumpautoload
+php artisan db:seed
+```
+
 
 ##Использование
 
@@ -100,7 +107,10 @@ Route::get('/category/{slug?}', 'CategoryController@index')->name('category');
 
 При необходимости можно изменить их названия в настройках. Это нужно для правильной генерации ссылок в меню категорий с использованием функции `route()`.
 
-Далее в контроллере подключите пакет и создаёте экземляр класса, передавая ему в качестве параметра (опционально) $slug.
+Далее в контроллере подключите пакет и создаёте экземляр класса.
+После этого есть два вариант:
+- Передать `string $slug` - `$lc->initWithSlug($slug)`
+- Передать `Category $category` - `$lc->initWithCategory($category)`
 
 ```
 <?php
@@ -114,25 +124,43 @@ class CategoryController extends Controller
 {
    public function index(Request $request)
    {
-       $lc = new LaravelCategory($request->slug); //Созадём экземляр класса
-
+       $lc = new LaravelCategory(); //Созадём экземляр класса
+       $lc->initWithSlug($request->$slug);
+       
+       //удобнее и лучше этот вариант, 
+       //т.к. обычно в самом методе мы уже получаем категорию из роута
+       //$lc->initWithCategory($category);
+      
        return view('catalog', [
-           'categories_numu' => $lc::createCategoryMenu(),
-           'breadcrumb' => $lc::createCategoryBreadcrumbs(),
-           'categories_сards' => $lc::createCategoryCards(),
+           'categories_numu' => $lc->createCategoryMenu(),
+           'breadcrumb' => $lc->createCategoryBreadcrumbs(),
+           'categories_сards' => $lc->createCategoryCards(),
        ]);
     }
 }
 ```
 
-| Метод  | Параметры | Вернёт | Описание |
-| ------------- | ------------- | ------------- | ------------- |
-| ::createCategoryMenu()  |   | html | Создаёт bootstrap 4 пошаговое меню категорий
-| ::createCategoryBreadcrumbs()  | `string $append`  | html или null | Создаёт bootstrap 4 хлебные крошки
-| ::createCategoryCards()  |   | html или null | Создаёт bootstrap 4 карточки категорий
-| ::getCategoryTree()  |   | array | Строит дерево всех категори и возвращает в виде многомерного массива
+| Метод  | Параметры | Вернёт | Описание |  Кеш |
+| ------------- | ------------- | ------------- | ------------- | ------------- |
+| initWithSlug()  |   | $this | Инициализирует класс по $slug категории |  |
+| initWithCategory()  |   | $this | Инициализирует класс по объекту модели категории  | |
+| createCategoryMenu()  |   | html | Создаёт bootstrap 4 пошаговое меню категорий  | |
+| createCategoryBreadcrumbs()  | `string $append`  | html или null | Создаёт bootstrap 4 хлебные крошки | да |
+| createCategoryCards()  |   | html или null | Создаёт bootstrap 4 карточки категорий  | |
+| getCategoryTree()  |   | array | Строит дерево всех категори и возвращает в виде многомерного массива  | да |
 
 `string $append` - Для добавления последней хлебной крошки, которая не связана с категориями. Например, для отображения хлебных крошек на старнице товара удобно вывести все ссылки активыными, а последнюю (имя товара) - нет. Т.к. класс работает только с категориями, то передать имя товара - последней хлебной крошки нужно отдельно.
+
+Кеширование данных по-умолчанию - 5 минут. Для метода `createCategoryBreadcrumbs()` кешируется готовый html для каждого url, чтобы не делать одно и то же при обновлении страницы и хождении туда-обратно. Для метода `getCategoryTree()` кешируется готовых массив всех категорий.
+
+Изменить время (в минутых) хранения кеша можно так:
+
+```
+$lc = new LaravelCategory();
+$lc->cache_time = 1; //Храним одну минуту
+$lc->cache_time = 0; //Отключаем кеш
+//Если кешировали, а потом отключили, то старый кеш останется. Его нужно очистить или подождать.
+```
 
 Для вывода на странице html используйте в шаблоне `{!! $your_data !!}`
 
