@@ -59,7 +59,21 @@
             -webkit-box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.075) !important;
             box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.075) !important;
         }
-        ```        
+        ``` 
+   1. И в конце ваша модель для таблицы категорий (если есть такая) должна наследоваться от модели категорий пакета
+   
+   ```
+   <?php
+   
+   namespace App;
+   
+   use nosennij\LaravelCategory\models\Category as LaravelCategory;
+   
+   class Category extends LaravelCategory
+   {
+      // Тут ваши личные методы
+   }
+   ```       
         
 ### Дополнительно
 В ходе миграфии базы данных создаётся таблица `categories` следующей структуры

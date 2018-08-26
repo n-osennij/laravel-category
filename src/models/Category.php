@@ -1,6 +1,6 @@
 <?php
 
-namespace Nosennij\LaravelCategory\models;
+namespace nosennij\LaravelCategory\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
