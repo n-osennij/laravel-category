@@ -31,6 +31,11 @@ class LaravelCategory
      */
     public $cache_time = 5;
 
+    public function __construct($cache_time = null)
+    {
+        $this->cache_time = $cache_time;
+    }
+
     /**
      * Готовит стартовую информацию для работы класса, используя $slug
      *
@@ -65,17 +70,20 @@ class LaravelCategory
     }
 
     /**
-     * На основе $slug устанавливает категории главного уровня или уровнем ниже
+     * На основе $slug устанавливает категории главного уровня или уровнем ниже.
      *
      * @param string|null $slug
+     * @return bool
      */
-    private function init(string $slug = null)
+    private function init(string $slug = null): bool
     {
         if (!empty($slug)) {
             $this->categories = $this->category->subcategories;
         } else {
             $this->categories = Category::main()->get();
         }
+
+        return true;
     }
 
     /**
@@ -130,7 +138,7 @@ class LaravelCategory
      * @param string|null $append
      * @return array
      */
-    private function buildBreadcrumbs(string $slug, string $append = null)
+    private function buildBreadcrumbs(string $slug, string $append = null): array
     {
         $category = $this->category;
         $breadcrumbs = array($category->toArray());
@@ -172,11 +180,15 @@ class LaravelCategory
      *
      * @return array
      */
-    public function getCategoryTree(): array
+    public function getCategoryTree(): ?array
     {
-        return Cache::remember('category_tree', $this->cache_time, function () {
+        if (empty($this->cache_time)){
             return $this->buildTree(Category::all()->toArray());
-        });
+        } else {
+            return Cache::remember('category_tree', $this->cache_time, function () {
+                return $this->buildTree(Category::all()->toArray());
+            });
+        }
     }
 
     /**
@@ -195,9 +207,9 @@ class LaravelCategory
      * На основе всех категорий строит многомерный дерево-массив категорий.
      *
      * @param array $items
-     * @return array
+     * @return array|null
      */
-    private function buildTree(array $items): array
+    private function buildTree(array $items): ?array
     {
         $children = array();
         foreach ($items as &$item) {
@@ -210,6 +222,6 @@ class LaravelCategory
             }
         }
 
-        return $children[0];
+        return $children[0] ?? null;
     }
 }
